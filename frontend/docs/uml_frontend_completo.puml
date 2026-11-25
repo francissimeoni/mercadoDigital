@@ -1,0 +1,326 @@
+@startuml
+title Mercado Digital - Frontend Completo
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty methods
+
+package "Bootstrap" {
+  class main_tsx
+  class App_tsx
+  class QueryClientProvider
+  class AuthProvider
+}
+
+package "Routing" {
+  class AppRouter
+  class ProtectedRoute
+  class RoleHomeRedirect
+}
+
+package "Auth" {
+  class AuthContext
+  class useAuth
+  class authSession
+  class accessControl
+}
+
+package "HTTP / API" {
+  class axiosClient
+  class authApi
+  class catalogoApi
+  class carritoApi
+  class pedidoApi
+  class proveedorApi
+  class logisticaApi
+  class notificacionApi
+  class rmaApi
+}
+
+package "Hooks React Query" {
+  class useCatalogo
+  class useProductoDetalle
+  class useCarrito
+  class useAgregarAlCarrito
+  class useCrearPedido
+  class usePedidos
+  class usePedidoDetalle
+  class usePedidosProveedor
+  class useMarcarListoParaRetiro
+  class useRetirosPendientes
+  class useDespachosPendientes
+  class useTransportistas
+  class useCrearTransportista
+  class useEnvioLogistica
+  class useMarcarRetirado
+  class useDespacharEnvio
+  class useMarcarEntregado
+  class useDescargarRotulo
+  class useNotificaciones
+  class useMarcarNotificacionLeida
+  class useRmas
+  class useRmaDetalle
+  class useSolicitarRma
+  class useAprobarRma
+  class useRecibirRmaEnDeposito
+  class useResolverRma
+}
+
+package "Layout" {
+  class MainLayout
+}
+
+package "Pages" {
+  class LoginPage
+  class CatalogoPage
+  class ProductoDetallePage
+  class CarritoPage
+  class PedidosPage
+  class PedidoDetallePage
+  class PedidoConfirmadoPage
+  class NotificacionesPage
+  class ProveedorPedidosPage
+  class LogisticaEnviosPage
+  class RmaPage
+  class RmaDetallePage
+}
+
+package "Components / UI" {
+  class ProductCard
+  class ProductCardSkeleton
+  class ProductoDetalleSkeleton
+  class CarritoItem
+  class ProveedorPedidoItem
+  class LogisticaRetiroItem
+  class LogisticaDespachoItem
+  class FeedbackAlert
+}
+
+package "Types" {
+  class AuthSession
+  class LoginRequest
+  class AuthResponse
+  class CatalogoItemResponse
+  class ProductoDetalleResponse
+  class AddItemToCarritoPayload
+  class CarritoResponse
+  class CrearPedidoCanonicoRequest
+  class PedidoResponse
+  class PedidoRevendedorResponse
+  class PedidoProveedorResponse
+  class PedidoLogisticaResponse
+  class NotificacionResponse
+  class TransportistaResponse
+  class EnvioResponse
+  class CrearTransportistaRequest
+  class DespacharEnvioRequest
+  class RmaResponse
+  class SolicitarRmaRequest
+  class ResolverRmaRequest
+}
+
+' bootstrap
+main_tsx --> QueryClientProvider
+main_tsx --> AuthProvider
+main_tsx --> App_tsx
+App_tsx --> AppRouter
+
+' routing
+AppRouter --> ProtectedRoute
+AppRouter --> RoleHomeRedirect
+AppRouter --> MainLayout
+AppRouter --> LoginPage
+AppRouter --> CatalogoPage
+AppRouter --> ProductoDetallePage
+AppRouter --> CarritoPage
+AppRouter --> PedidosPage
+AppRouter --> PedidoDetallePage
+AppRouter --> PedidoConfirmadoPage
+AppRouter --> NotificacionesPage
+AppRouter --> ProveedorPedidosPage
+AppRouter --> LogisticaEnviosPage
+AppRouter --> RmaPage
+AppRouter --> RmaDetallePage
+
+' auth layer
+AuthProvider --> AuthContext
+useAuth --> AuthContext
+AuthProvider --> authApi
+AuthProvider --> authSession
+AuthProvider --> accessControl
+ProtectedRoute --> useAuth
+ProtectedRoute --> accessControl
+RoleHomeRedirect --> useAuth
+RoleHomeRedirect --> accessControl
+MainLayout --> useAuth
+MainLayout --> accessControl
+axiosClient --> authSession
+
+' api dependencies
+authApi --> axiosClient
+catalogoApi --> axiosClient
+carritoApi --> axiosClient
+pedidoApi --> axiosClient
+proveedorApi --> axiosClient
+logisticaApi --> axiosClient
+notificacionApi --> axiosClient
+rmaApi --> axiosClient
+
+' hooks -> apis
+useCatalogo --> catalogoApi
+useProductoDetalle --> catalogoApi
+useCarrito --> carritoApi
+useAgregarAlCarrito --> carritoApi
+useCrearPedido --> pedidoApi
+usePedidos --> pedidoApi
+usePedidoDetalle --> pedidoApi
+usePedidosProveedor --> proveedorApi
+useMarcarListoParaRetiro --> proveedorApi
+useRetirosPendientes --> logisticaApi
+useDespachosPendientes --> logisticaApi
+useTransportistas --> logisticaApi
+useCrearTransportista --> logisticaApi
+useEnvioLogistica --> logisticaApi
+useMarcarRetirado --> logisticaApi
+useDespacharEnvio --> logisticaApi
+useMarcarEntregado --> logisticaApi
+useDescargarRotulo --> logisticaApi
+useNotificaciones --> notificacionApi
+useMarcarNotificacionLeida --> notificacionApi
+useRmas --> rmaApi
+useRmaDetalle --> rmaApi
+useSolicitarRma --> rmaApi
+useAprobarRma --> rmaApi
+useRecibirRmaEnDeposito --> rmaApi
+useResolverRma --> rmaApi
+
+' pages -> hooks/components
+LoginPage --> useAuth
+LoginPage --> FeedbackAlert
+
+CatalogoPage --> useCatalogo
+CatalogoPage --> ProductCard
+CatalogoPage --> ProductCardSkeleton
+CatalogoPage --> FeedbackAlert
+
+ProductoDetallePage --> useProductoDetalle
+ProductoDetallePage --> useAgregarAlCarrito
+ProductoDetallePage --> ProductoDetalleSkeleton
+ProductoDetallePage --> FeedbackAlert
+
+CarritoPage --> useCarrito
+CarritoPage --> useCrearPedido
+CarritoPage --> CarritoItem
+CarritoPage --> FeedbackAlert
+
+PedidosPage --> usePedidos
+PedidosPage --> FeedbackAlert
+PedidoDetallePage --> usePedidoDetalle
+PedidoConfirmadoPage --> usePedidoDetalle
+
+NotificacionesPage --> useNotificaciones
+NotificacionesPage --> useMarcarNotificacionLeida
+NotificacionesPage --> FeedbackAlert
+
+ProveedorPedidosPage --> usePedidosProveedor
+ProveedorPedidosPage --> useMarcarListoParaRetiro
+ProveedorPedidosPage --> ProveedorPedidoItem
+ProveedorPedidosPage --> FeedbackAlert
+
+LogisticaEnviosPage --> useRetirosPendientes
+LogisticaEnviosPage --> useDespachosPendientes
+LogisticaEnviosPage --> useTransportistas
+LogisticaEnviosPage --> useCrearTransportista
+LogisticaEnviosPage --> useEnvioLogistica
+LogisticaEnviosPage --> useMarcarRetirado
+LogisticaEnviosPage --> useDespacharEnvio
+LogisticaEnviosPage --> useMarcarEntregado
+LogisticaEnviosPage --> useDescargarRotulo
+LogisticaEnviosPage --> LogisticaRetiroItem
+LogisticaEnviosPage --> LogisticaDespachoItem
+LogisticaEnviosPage --> FeedbackAlert
+
+RmaPage --> useRmas
+RmaPage --> useSolicitarRma
+RmaPage --> FeedbackAlert
+RmaDetallePage --> useRmaDetalle
+RmaDetallePage --> useAprobarRma
+RmaDetallePage --> useRecibirRmaEnDeposito
+RmaDetallePage --> useResolverRma
+RmaDetallePage --> FeedbackAlert
+
+' type usage
+AuthContext ..> AuthSession
+authApi ..> LoginRequest
+authApi ..> AuthResponse
+catalogoApi ..> CatalogoItemResponse
+catalogoApi ..> ProductoDetalleResponse
+carritoApi ..> AddItemToCarritoPayload
+carritoApi ..> CarritoResponse
+pedidoApi ..> CrearPedidoCanonicoRequest
+pedidoApi ..> PedidoResponse
+pedidoApi ..> PedidoRevendedorResponse
+proveedorApi ..> PedidoProveedorResponse
+logisticaApi ..> PedidoLogisticaResponse
+logisticaApi ..> TransportistaResponse
+logisticaApi ..> CrearTransportistaRequest
+logisticaApi ..> DespacharEnvioRequest
+logisticaApi ..> EnvioResponse
+notificacionApi ..> NotificacionResponse
+rmaApi ..> RmaResponse
+rmaApi ..> SolicitarRmaRequest
+rmaApi ..> ResolverRmaRequest
+
+note right of AuthProvider
+Responsabilidades globales:
+- login/logout
+- guardar sesion JWT
+- parsear exp / roles / uid
+- redirigir por expiracion
+- sincronizar localStorage + evento custom
+end note
+
+note right of accessControl
+Mapa unico frontend:
+- home por rol
+- rutas permitidas
+- links visibles por rol
+Roles:
+REVENDEDOR
+PROVEEDOR
+LOGISTICA_MD
+ADMIN_MD
+end note
+
+note right of axiosClient
+Cliente HTTP global:
+- baseURL http://localhost:8080
+- agrega Authorization Bearer
+- ante 401 limpia sesion
+- redirige a /login
+end note
+
+note right of CatalogoPage
+Resuelve revendedorId desde:
+- query param
+- localStorage
+- VITE_REVENDEDOR_ID
+end note
+
+note right of CarritoPage
+Resuelve clienteId y revendedorId desde:
+- query param
+- localStorage
+- variables VITE_*
+end note
+
+note right of AppRouter
+Arbol actual:
+/login publico
+resto protegido por ProtectedRoute
+y renderizado dentro de MainLayout
+end note
+
+@enduml

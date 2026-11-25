@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "./storefront/dashboard/productos.css";
+@import "./storefront/dashboard/dashboard.css";
+
+@import "./storefront/storefront.css";

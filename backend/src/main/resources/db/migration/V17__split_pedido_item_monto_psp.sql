@@ -1,0 +1,2 @@
+ALTER TABLE splits_pedido_item
+  ADD COLUMN monto_psp DECIMAL(19,2) NOT NULL DEFAULT 0.00;

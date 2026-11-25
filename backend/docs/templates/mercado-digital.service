@@ -1,0 +1,15 @@
+[Unit]
+Description=Mercado Digital Backend
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/mercado-digital/backend
+EnvironmentFile=/opt/mercado-digital/backend/.env
+ExecStart=/usr/bin/java -jar /opt/mercado-digital/backend/app.jar --spring.profiles.active=prod --server.port=8081
+Restart=always
+RestartSec=5
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

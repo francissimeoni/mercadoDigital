@@ -1,0 +1,20 @@
+CREATE TABLE storefront_google_oauth_intentos (
+    id CHAR(36) NOT NULL,
+    state_hash CHAR(64) NOT NULL,
+    ticket_hash CHAR(64) NULL,
+    nonce VARCHAR(100) NOT NULL,
+    code_verifier VARCHAR(128) NOT NULL,
+    storefront_host VARCHAR(255) NOT NULL,
+    return_path VARCHAR(300) NOT NULL,
+    usuario_id CHAR(36) NULL,
+    expires_at DATETIME(6) NOT NULL,
+    completed_at DATETIME(6) NULL,
+    consumed_at DATETIME(6) NULL,
+    created_at DATETIME(6) NOT NULL,
+    updated_at DATETIME(6) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT uk_storefront_google_oauth_state UNIQUE (state_hash),
+    CONSTRAINT uk_storefront_google_oauth_ticket UNIQUE (ticket_hash),
+    INDEX idx_storefront_google_oauth_expira (expires_at),
+    INDEX idx_storefront_google_oauth_usuario (usuario_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

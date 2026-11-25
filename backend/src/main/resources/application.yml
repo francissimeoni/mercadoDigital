@@ -1,0 +1,91 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 26MB
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/mercado_digital?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: admin
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:true}
+            required: ${MAIL_SMTP_STARTTLS_REQUIRED:false}
+
+mercado-digital:
+  psp-fee: 0.08
+  seguro-transporte: 0.02
+
+app:
+  security:
+    enabled: true
+    jwt-secret: md-dev-secret-cambiar-en-produccion
+    jwt-expiration-seconds: 3600
+    jwt-refresh-expiration-seconds: ${APP_SECURITY_JWT_REFRESH_EXPIRATION_SECONDS:2592000}
+  seed-demo:
+    enabled: false
+  post-compra-email:
+    transport: ${POST_COMPRA_EMAIL_TRANSPORT:log}
+    from-email: ${POST_COMPRA_EMAIL_FROM_EMAIL:no-reply@mercadodigital.local}
+    from-name: ${POST_COMPRA_EMAIL_FROM_NAME:Mercado Digital}
+    base-public-url: ${POST_COMPRA_EMAIL_BASE_PUBLIC_URL:http://localhost:5173}
+  split-payout:
+    transport: ${APP_SPLIT_PAYOUT_TRANSPORT:mercadopago}
+  storefront-google-oauth:
+    client-id: ${GOOGLE_OAUTH_CLIENT_ID:771857444138-uc0rr4hmpef9ur5031beu7k41t04aa8o.apps.googleusercontent.com}
+    client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET:}
+    redirect-uri: ${GOOGLE_OAUTH_REDIRECT_URI:https://mercado-digital.com.ar/api/public/storefront/auth/google/callback}
+    authorization-url: https://accounts.google.com/o/oauth2/v2/auth
+    token-url: https://oauth2.googleapis.com/token
+    jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+
+mercadopago:
+  enabled: false
+  base-url: https://api.mercadopago.com
+  client-id: 3896333196859991
+  client-secret: ${MERCADOPAGO_CLIENT_SECRET:}
+  redirect-uri: http://localhost:8080/public/mercadopago/oauth/callback
+  admin-redirect-url: http://localhost:5173/admin/storefronts
+  access-token: ${MERCADOPAGO_ACCESS_TOKEN:}
+  public-key: ${MERCADOPAGO_PUBLIC_KEY:}
+  return-url: http://localhost:5173/pago/retorno
+  webhook-url: http://localhost:8080/webhooks/psp/mercadopago
+  webhook-secret: ${MERCADOPAGO_WEBHOOK_SECRET:}
+  currency: ARS
+  payout-notification-url: ${MERCADOPAGO_PAYOUT_NOTIFICATION_URL:}
+  payout-header-signature: ${MERCADOPAGO_PAYOUT_HEADER_SIGNATURE:true}
+  payout-header-enforce-signature: ${MERCADOPAGO_PAYOUT_HEADER_ENFORCE_SIGNATURE:false}
+  payout-header-test-token: ${MERCADOPAGO_PAYOUT_HEADER_TEST_TOKEN:false}
+
+# Activación explícita por UUID; vacío mantiene el recorrido anterior.
+catalogo:
+  publico:
+    revendedores: ${CATALOGO_PUBLICO_REVENDEDORES:}

@@ -1,0 +1,490 @@
+@startuml
+title Mercado Digital - Backend Completo
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty methods
+
+package "Configuracion y Seguridad" {
+  class SecurityConfig
+  class CorsConfig
+  class JwtFilter
+  class JwtService
+  class MercadoDigitalProperties
+}
+
+package "Bootstrap" {
+  class LocalDemoDataSeeder
+}
+
+package "Controllers" {
+  class AuthController
+  class CatalogoController
+  class PedidoController
+  class RevendedorController
+  class ProveedorController
+  class LogisticaController
+  class EnvioController
+  class NotificacionController
+  class RmaController
+  class ProductoController
+  class ProductoCanonicoController
+  class ProductoMediaController
+  class WebhookPspController
+}
+
+package "Services" {
+  class AuthService
+  class CatalogoService
+  class PedidoService
+  class BandejasOperativasService
+  class EnvioService
+  class TransportistaService
+  class NotificationService
+  class RmaService
+  class ProductoService
+  class ProductoMediaService
+  class OfertaProductoCanonicoService
+  class PricingService
+  class RotuloEnvioService
+  class UsuarioService
+  class WebhookPspService
+}
+
+package "Repositories" {
+  interface UsuarioRepository
+  interface RolRepository
+  interface RevendedorRepository
+  interface AsesorVentaRepository
+  interface ProveedorRepository
+  interface ProductoRepository
+  interface ProductoCanonicoRepository
+  interface ProductoMediaRepository
+  interface ProveedorStockRepository
+  interface RevendedorMarkupRepository
+  interface PedidoRepository
+  interface PedidoItemRepository
+  interface PagoRepository
+  interface EnvioRepository
+  interface TransportistaRepository
+  interface TarifaTransportistaRepository
+  interface NotificacionRepository
+  interface RMARepository
+  interface SplitPedidoItemRepository
+  interface PspWebhookRepository
+  interface AuditoriaEventoRepository
+}
+
+package "DTO Request" {
+  class LoginRequest
+  class CrearPedidoRequest
+  class CrearPedidoCanonicoRequest
+  class PedidoItemRequest
+  class PedidoItemCanonicoRequest
+  class DespacharEnvioRequest
+  class CrearTransportistaRequest
+  class SolicitarRmaRequest
+  class ResolverRmaRequest
+  class ProductoMediaRequest
+  class WebhookPspRequest
+}
+
+package "DTO Response" {
+  class AuthResponse
+  class CatalogoItemResponse
+  class ProductoDetalleResponse
+  class ProductoResponse
+  class ProductoMediaResponse
+  class OfertaProductoResponse
+  class PedidoResponse
+  class PedidoItemResponse
+  class PedidoRevendedorResponse
+  class PedidoProveedorResponse
+  class PedidoLogisticaResponse
+  class EnvioResponse
+  class NotificacionResponse
+  class TransportistaResponse
+  class RmaResponse
+  class UsuarioResponse
+}
+
+package "Mappers" {
+  class ProductoMapper
+  class PedidoMapper
+}
+
+package "Entidades Core" {
+  class BaseEntity {
+    +id: UUID
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  class Usuario {
+    +nombre: String
+    +email: String
+    +passwordHash: String
+    +tipoUsuario: TipoUsuario
+    +activo: boolean
+  }
+
+  class Rol {
+    +nombre: String
+  }
+
+  class Revendedor {
+    +nombre: String
+    +dominio: String
+    +activo: boolean
+  }
+
+  class AsesorVenta {
+    +nombre: String
+    +fotoUrl: String
+    +activo: boolean
+  }
+
+  class Proveedor {
+    +nombre: String
+    +activo: boolean
+  }
+
+  class ProductoCanonico {
+    +marca: String
+    +modelo: String
+    +nombrePublico: String
+    +atributosJson: String
+    +activo: boolean
+  }
+
+  class Producto {
+    +sku: String
+    +nombre: String
+    +descripcion: String
+    +precioCosto: BigDecimal
+    +moneda: String
+    +categoriaPaquete: String
+    +activo: boolean
+  }
+
+  class ProductoMedia {
+    +tipoMedia: TipoMedia
+    +url: String
+    +orden: int
+    +esPrincipal: boolean
+  }
+
+  class ProveedorStock {
+    +stock: int
+    +precioCostoActual: BigDecimal
+  }
+
+  class RevendedorMarkup {
+    +markupPorcentaje: BigDecimal
+    +markupFijo: BigDecimal
+    +activo: boolean
+  }
+}
+
+package "Entidades Operativas" {
+  class Pedido {
+    +estadoPedido: PedidoEstado
+    +totalBruto: BigDecimal
+    +totalPsp: BigDecimal
+    +totalEnvio: BigDecimal
+    +totalSeguro: BigDecimal
+    +totalFinal: BigDecimal
+  }
+
+  class PedidoItem {
+    +cantidad: int
+    +precioCosto: BigDecimal
+    +markupAplicado: BigDecimal
+    +precioItemFinal: BigDecimal
+    +tieneSeguro: boolean
+    +montoSeguro: BigDecimal
+  }
+
+  class Pago {
+    +estadoPago: PagoEstado
+    +metodo: String
+    +monto: BigDecimal
+    +pspReferencia: String
+  }
+
+  class Envio {
+    +categoriaPaquete: String
+    +tracking: String
+    +estadoEnvio: EnvioEstado
+    +direccionEnvio: String
+    +costoEnvio: BigDecimal
+  }
+
+  class Transportista {
+    +nombre: String
+    +activo: boolean
+  }
+
+  class TarifaTransportista {
+    +categoriaPaquete: String
+    +zona: String
+    +precio: BigDecimal
+    +demoraEstimadaDias: int
+  }
+
+  class Notificacion {
+    +tipo: String
+    +titulo: String
+    +mensaje: String
+    +leida: boolean
+  }
+
+  class RMA {
+    +estadoRma: RmaEstado
+  }
+
+  class SplitPedidoItem {
+    +montoProveedor: BigDecimal
+    +montoRevendedor: BigDecimal
+    +montoMd: BigDecimal
+    +montoEnvio: BigDecimal
+    +montoSeguro: BigDecimal
+  }
+
+  class PspWebhook {
+    +idEventoPsp: String
+    +tipoEvento: String
+    +payloadJson: String
+    +recibidoEn: LocalDateTime
+    +procesadoOk: boolean
+  }
+
+  class AuditoriaEvento {
+    +tipoEvento: String
+    +referenciaId: UUID
+    +payloadJson: String
+    +fechaEvento: LocalDateTime
+  }
+}
+
+enum TipoUsuario {
+  CLIENTE
+  REVENDEDOR
+  PROVEEDOR
+  ADMIN_MD
+}
+
+enum PedidoEstado {
+  CREADO
+  PAGADO
+  CANCELADO
+}
+
+enum PagoEstado {
+  PENDIENTE
+  CONFIRMADO
+  RECHAZADO
+}
+
+enum EnvioEstado {
+  PENDIENTE_PREPARACION
+  LISTO_PARA_RETIRO
+  RETIRADO
+  DESPACHADO
+  ENTREGADO
+}
+
+enum RmaEstado {
+  SOLICITADO
+  APROBADO
+  RECIBIDO_EN_DEPOSITO
+  RESUELTO
+}
+
+enum TipoMedia {
+  IMAGEN
+  VIDEO
+}
+
+' Controllers -> Services
+AuthController --> AuthService
+CatalogoController --> CatalogoService
+PedidoController --> PedidoService
+RevendedorController --> BandejasOperativasService
+ProveedorController --> BandejasOperativasService
+LogisticaController --> BandejasOperativasService
+LogisticaController --> TransportistaService
+EnvioController --> EnvioService
+NotificacionController --> NotificationService
+RmaController --> RmaService
+ProductoController --> ProductoService
+ProductoCanonicoController --> OfertaProductoCanonicoService
+ProductoMediaController --> ProductoMediaService
+WebhookPspController --> WebhookPspService
+
+' Services -> security / helpers
+AuthService --> UsuarioRepository
+AuthService --> JwtService
+CatalogoService --> PricingService
+CatalogoService --> ProductoMediaService
+EnvioService --> RotuloEnvioService
+
+' Services -> repositories
+CatalogoService --> RevendedorRepository
+CatalogoService --> ProductoCanonicoRepository
+CatalogoService --> ProductoRepository
+CatalogoService --> ProveedorStockRepository
+CatalogoService --> RevendedorMarkupRepository
+PedidoService --> PedidoRepository
+PedidoService --> PedidoItemRepository
+PedidoService --> PagoRepository
+PedidoService --> EnvioRepository
+PedidoService --> RevendedorRepository
+PedidoService --> UsuarioRepository
+PedidoService --> ProductoRepository
+PedidoService --> ProveedorStockRepository
+PedidoService --> SplitPedidoItemRepository
+PedidoService --> PricingService
+BandejasOperativasService --> PedidoRepository
+BandejasOperativasService --> PedidoItemRepository
+BandejasOperativasService --> EnvioRepository
+BandejasOperativasService --> TransportistaRepository
+EnvioService --> EnvioRepository
+EnvioService --> PedidoRepository
+EnvioService --> TransportistaRepository
+NotificationService --> NotificacionRepository
+RmaService --> RMARepository
+RmaService --> PedidoItemRepository
+RmaService --> PedidoRepository
+RmaService --> UsuarioRepository
+ProductoService --> ProductoRepository
+ProductoService --> ProductoMapper
+ProductoMediaService --> ProductoRepository
+ProductoMediaService --> ProductoMediaRepository
+OfertaProductoCanonicoService --> ProductoCanonicoRepository
+OfertaProductoCanonicoService --> RevendedorRepository
+OfertaProductoCanonicoService --> RevendedorMarkupRepository
+OfertaProductoCanonicoService --> ProveedorStockRepository
+OfertaProductoCanonicoService --> PricingService
+TransportistaService --> TransportistaRepository
+TransportistaService --> TarifaTransportistaRepository
+UsuarioService --> UsuarioRepository
+UsuarioService --> RolRepository
+WebhookPspService --> PspWebhookRepository
+WebhookPspService --> PagoRepository
+WebhookPspService --> PedidoRepository
+WebhookPspService --> AuditoriaEventoRepository
+
+' Security wiring
+SecurityConfig --> JwtFilter
+JwtFilter --> JwtService
+JwtFilter --> UsuarioRepository
+
+' Bootstrap
+LocalDemoDataSeeder --> RolRepository
+LocalDemoDataSeeder --> UsuarioRepository
+LocalDemoDataSeeder --> RevendedorRepository
+LocalDemoDataSeeder --> ProveedorRepository
+LocalDemoDataSeeder --> ProductoCanonicoRepository
+LocalDemoDataSeeder --> ProductoRepository
+LocalDemoDataSeeder --> ProveedorStockRepository
+LocalDemoDataSeeder --> RevendedorMarkupRepository
+LocalDemoDataSeeder --> ProductoMediaRepository
+LocalDemoDataSeeder --> TransportistaRepository
+LocalDemoDataSeeder --> TarifaTransportistaRepository
+LocalDemoDataSeeder --> PedidoRepository
+LocalDemoDataSeeder --> PedidoItemRepository
+LocalDemoDataSeeder --> PagoRepository
+LocalDemoDataSeeder --> EnvioRepository
+LocalDemoDataSeeder --> NotificacionRepository
+
+' DTO relations
+AuthController ..> LoginRequest
+AuthController ..> AuthResponse
+CatalogoController ..> CatalogoItemResponse
+CatalogoController ..> ProductoDetalleResponse
+PedidoController ..> CrearPedidoRequest
+PedidoController ..> CrearPedidoCanonicoRequest
+PedidoController ..> PedidoResponse
+RevendedorController ..> PedidoRevendedorResponse
+ProveedorController ..> PedidoProveedorResponse
+LogisticaController ..> PedidoLogisticaResponse
+LogisticaController ..> CrearTransportistaRequest
+LogisticaController ..> TransportistaResponse
+EnvioController ..> DespacharEnvioRequest
+EnvioController ..> EnvioResponse
+NotificacionController ..> NotificacionResponse
+RmaController ..> SolicitarRmaRequest
+RmaController ..> ResolverRmaRequest
+RmaController ..> RmaResponse
+ProductoController ..> ProductoResponse
+ProductoCanonicoController ..> OfertaProductoResponse
+ProductoMediaController ..> ProductoMediaRequest
+ProductoMediaController ..> ProductoMediaResponse
+WebhookPspController ..> WebhookPspRequest
+
+' Inheritance
+BaseEntity <|-- Usuario
+BaseEntity <|-- Rol
+BaseEntity <|-- Revendedor
+BaseEntity <|-- AsesorVenta
+BaseEntity <|-- Proveedor
+BaseEntity <|-- ProductoCanonico
+BaseEntity <|-- Producto
+BaseEntity <|-- ProductoMedia
+BaseEntity <|-- ProveedorStock
+BaseEntity <|-- RevendedorMarkup
+BaseEntity <|-- Pedido
+BaseEntity <|-- PedidoItem
+BaseEntity <|-- Pago
+BaseEntity <|-- Envio
+BaseEntity <|-- Transportista
+BaseEntity <|-- TarifaTransportista
+BaseEntity <|-- Notificacion
+BaseEntity <|-- RMA
+BaseEntity <|-- PspWebhook
+BaseEntity <|-- AuditoriaEvento
+
+' Domain relationships
+Usuario "*" -- "*" Rol
+Revendedor "1" -- "*" AsesorVenta
+Revendedor "1" -- "*" RevendedorMarkup
+Proveedor "1" -- "*" Producto
+Proveedor "1" -- "*" ProveedorStock
+ProductoCanonico "1" -- "*" Producto
+Producto "1" -- "*" ProductoMedia
+Producto "1" -- "*" ProveedorStock
+Producto "1" -- "*" RevendedorMarkup
+
+Pedido "*" --> "1" Revendedor
+Pedido "*" --> "1" Usuario : cliente
+Pedido "1" -- "*" PedidoItem
+Pedido "1" -- "1" Pago
+Pedido "1" -- "1" Envio
+PedidoItem "*" --> "1" Producto
+PedidoItem "*" --> "1" Proveedor
+PedidoItem "1" -- "0..1" SplitPedidoItem
+Envio "*" --> "0..1" Transportista
+Transportista "1" -- "*" TarifaTransportista
+Notificacion "*" --> "1" Usuario
+RMA "*" --> "1" PedidoItem
+RMA "*" --> "1" Usuario : creadoPor
+
+note right of Usuario
+Hoy no existe entidad Cliente separada.
+"cliente" en Pedido referencia a Usuario.
+end note
+
+note right of SecurityConfig
+Rutas protegidas hoy:
+- /auth/login publico
+- /catalogo, /pedido, /revendedores -> REVENDEDOR
+- /proveedores -> PROVEEDOR
+- /logistica, /envios -> LOGISTICA_MD
+- /rma -> ADMIN_MD
+- /notificaciones -> autenticado
+end note
+
+@enduml

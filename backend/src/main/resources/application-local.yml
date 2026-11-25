@@ -1,0 +1,15 @@
+app:
+  seed-demo:
+    enabled: true
+
+mercadopago:
+  base-url: https://api.mercadopago.com
+  client-id: 3896333196859991
+  client-secret: ${MERCADOPAGO_CLIENT_SECRET:}
+  redirect-uri: http://localhost:8080/public/mercadopago/oauth/callback
+  admin-redirect-url: http://localhost:5173/admin/storefronts
+  access-token: ${MERCADOPAGO_ACCESS_TOKEN:}
+  public-key: ${MERCADOPAGO_PUBLIC_KEY:}
+  return-url: http://localhost:5173/pago/retorno
+  webhook-url: http://localhost:8080/webhooks/psp/mercadopago
+  currency: ARS

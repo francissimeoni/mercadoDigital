@@ -1,0 +1,33 @@
+# Dependencies and build output
+**/node_modules/
+**/dist/
+**/target/
+**/artifacts/
+*.log
+*.class
+*.jar
+*.tgz
+*.zip
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.env
+application-prod.yml
+application-prod.yaml
+*.pem
+*.key
+credenciales*
+
+# Operational data and recovery material
+backend/storage/
+recovery/
+recuperacion/
+backups/
+*.sql.gz
+tmp_*
+.idea/
+.vscode/
+.DS_Store
